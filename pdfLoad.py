@@ -1,5 +1,4 @@
 import os
-import pikepdf as pk
 import tabula
 import pandas as pd
 
@@ -8,29 +7,25 @@ filename = os.listdir(path)[0]
 filepath = path + '\\' + filename
 excelpath = path + '\\' + filename[:-3] + 'xlsx'
 
-tables = tabula.read_pdf(filepath, pages='all')
+def pdf_table_to_xlsx(pdf_path, xlsx_path, export=True):
 
-writer = pd.ExcelWriter(excelpath, engine='xlsxwriter')
-table_index = 1
-for table in tables:
-    DF = pd.DataFrame(table)
-    DF.to_excel(writer, sheet_name = 'Sheet{}'.format(table_index))
-    table_index = table_index+1
-writer.save()
+    tables = tabula.read_pdf(pdf_path, pages='all')
+    if export == True:
 
-#print(excelpath)
-#file = pk.Pdf.open(filepath)
-#DF.to_excel('table1.xlsx')
-#pagenumber = 1
-#for page in file.pages:
-#page = file.pages[0]
-#print(repr(page))
-    #os.mkdir(path + '/page{}'.format(pagenumber))
-    #os.chdir (path + '/page{}'.format(pagenumber))
-    #for image in page.images.keys():
-    #    rawimage = page.images[image]
-    #    pdfimage = pk.PdfImage(rawimage)
-    #    pdfimage.extract_to(fileprefix=image[1:])
-    #pagenumber = pagenumber + 1
+        writer = pd.ExcelWriter(xlsx_path, engine='xlsxwriter')
+        table_index = 1
+        for table in tables:
+            DF = pd.DataFrame(table)
+            DF.to_excel(writer, sheet_name = 'Sheet{}'.format(table_index))
+            table_index = table_index+1
+        writer.save()
+    else:
+        return tables
 
+if __name__ == '__main__':
+    path = os.getcwd() + '\\Reports'
+    filename = os.listdir(path)[0]
+    filepath = path + '\\' + filename
+    excelpath = path + '\\' + filename[:-3] + 'xlsx'
+    pdf_table_to_xlsx(filepath, excelpath)
 
